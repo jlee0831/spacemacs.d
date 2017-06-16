@@ -32,6 +32,7 @@ values."
    dotspacemacs-configuration-layers
    '(
      typescript
+     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -46,7 +47,6 @@ values."
      git
      github
      helm
-     javascript
      markdown
      org
      osx
@@ -64,7 +64,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(prettier-js)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -316,6 +316,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  (setq node-add-modules-path t)
   )
 
 (defun dotspacemacs/user-config ()
@@ -325,6 +326,38 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; Prevent font size changes from resizing frame
+  (setq frame-inhibit-implied-resize t)
+  ;; Change entire frame font size
+  (defun my-alter-frame-font-size (fn)
+    (let* ((current-font-name (frame-parameter nil 'font))
+           (decomposed-font-name (x-decompose-font-name current-font-name))
+           (font-size (string-to-number (aref decomposed-font-name 5))))
+      (aset decomposed-font-name 5 (int-to-string (funcall fn font-size)))
+      (set-frame-font (x-compose-font-name decomposed-font-name))))
+
+  (defun my-inc-frame-font-size ()
+    (interactive)
+    (my-alter-frame-font-size '1+))
+
+  (defun my-dec-frame-font-size ()
+    (interactive)
+    (my-alter-frame-font-size '1-))
+
+  (global-set-key (kbd "H-+") 'my-inc-frame-font-size)
+  (global-set-key (kbd "H-=") 'my-inc-frame-font-size)
+  (global-set-key (kbd "H--") 'my-dec-frame-font-size)
+
+  (use-package prettier-js
+    :init
+    (progn
+      (add-hook 'typescript-mode-hook 'prettier-js-mode)
+      (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+      (setq prettier-js-args '(
+                               "--trailing-comma" "es5"
+                               "--bracket-spacing" "false"
+                               "--no-semi"
+                               "--single-quote"))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -341,7 +374,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (rjsx-mode eslintd-fix add-node-modules-path restclient-helm helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag ace-jump-helm-line yaml-mode ob-restclient ob-http company-restclient restclient know-your-http-well web-beautify unfill smeargle rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder rbenv rake pbcopy osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro alert log4e gntp org-download ob-elixir mwim mmm-mode minitest markdown-toc markdown-mode magithub magit-gitflow magit-gh-pulls livid-mode skewer-mode simple-httpd launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc htmlize gnuplot gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md fuzzy flycheck-pos-tip pos-tip flycheck-mix flycheck-credo flycheck evil-magit magit magit-popup git-commit with-editor diff-hl company-tern dash-functional tern company-statistics coffee-mode chruby bundler inf-ruby browse-at-remote auto-yasnippet yasnippet alchemist company elixir-mode ac-ispell auto-complete ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-purpose window-purpose imenu-list ivy-hydra info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash async aggressive-indent adaptive-wrap ace-window ace-link avy))))
+    (prettier-js ruby-refactor password-generator org-brain ghub+ apiwrap ghub evil-org evil-lion editorconfig tide typescript-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data rjsx-mode eslintd-fix add-node-modules-path restclient-helm helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag ace-jump-helm-line yaml-mode ob-restclient ob-http company-restclient restclient know-your-http-well web-beautify unfill smeargle rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder rbenv rake pbcopy osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro alert log4e gntp org-download ob-elixir mwim mmm-mode minitest markdown-toc markdown-mode magithub magit-gitflow magit-gh-pulls livid-mode skewer-mode simple-httpd launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc htmlize gnuplot gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md fuzzy flycheck-pos-tip pos-tip flycheck-mix flycheck-credo flycheck evil-magit magit magit-popup git-commit with-editor diff-hl company-tern dash-functional tern company-statistics coffee-mode chruby bundler inf-ruby browse-at-remote auto-yasnippet yasnippet alchemist company elixir-mode ac-ispell auto-complete ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-purpose window-purpose imenu-list ivy-hydra info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash async aggressive-indent adaptive-wrap ace-window ace-link avy))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
