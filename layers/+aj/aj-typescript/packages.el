@@ -1,7 +1,5 @@
 (defconst aj-typescript-packages
-  '(
-    rjsx-mode
-    ))
+  '())
 
 (setq typescript-indent-level 2)
 
