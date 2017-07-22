@@ -1,1 +1,1 @@
-(configuration-layer/declare-layer '(aj-javascript))
+(configuration-layer/declare-layer '(typescript))
