@@ -355,9 +355,7 @@ you should place your code here."
       (add-hook 'typescript-mode-hook 'prettier-js-mode)
       (add-hook 'rjsx-mode-hook 'prettier-js-mode)
       (setq prettier-js-args '(
-                               "--trailing-comma" "es5"
-                               "--bracket-spacing" "false"
-                               "--no-semi"
+                               "--trailing-comma" "all"
                                "--single-quote"))))
   (add-hook 'web-mode-hook 'add-node-modules-path t)
   (add-hook 'web-mode-hook 'prettier-js-mode)
