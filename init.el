@@ -46,7 +46,8 @@ values."
      elixir
      git
      github
-     helm
+     ;; helm
+     ivy
      markdown
      (node :variables node-add-modules-path t)
      org
