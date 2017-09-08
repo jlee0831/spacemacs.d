@@ -349,6 +349,18 @@ you should place your code here."
   (global-set-key (kbd "H-=") 'my-inc-frame-font-size)
   (global-set-key (kbd "H--") 'my-dec-frame-font-size)
 
+  (defun ediff-last-kills ()
+    (interactive)
+    (let ((buffer-a (get-buffer-create "*ediff-kill-a*"))
+          (buffer-b (get-buffer-create "*ediff-kill-b*")))
+      (with-current-buffer buffer-a
+        (erase-buffer)
+        (insert (nth 0 kill-ring)))
+      (with-current-buffer buffer-b
+        (erase-buffer)
+        (insert (nth 1 kill-ring)))
+      (ediff-buffers buffer-a buffer-b)))
+
   (use-package prettier-js
     :init
     (progn
